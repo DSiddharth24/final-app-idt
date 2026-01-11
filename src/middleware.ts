@@ -1,19 +1,23 @@
-import { type NextRequest } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
-    return await updateSession(request)
-}
+export function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl
 
-export const config = {
-    matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         * Feel free to modify this pattern to include more paths.
-         */
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-    ],
+  // ✅ PUBLIC ROUTES (must always be allowed)
+  if (
+    pathname === '/' ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/api/iot') // allow IoT
+  ) {
+    return NextResponse.next()
+  }
+
+  // 🔒 PROTECTED ROUTES
+  if (pathname.startsWith('/dashboard')) {
+    // later you’ll check session here
+    return NextResponse.next()
+  }
+
+  return NextResponse.next()
 }
