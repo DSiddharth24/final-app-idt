@@ -106,10 +106,19 @@ export async function POST(req: NextRequest) {
             timestamp: new Date().toISOString(),
         })
     } catch (error) {
-        if (error instanceof z.ZodError) {
-            return NextResponse.json({ error: 'Invalid request payload', details: error.errors }, { status: 400 })
-        }
-        console.error('IoT Error:', error)
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    if (error instanceof z.ZodError) {
+        return NextResponse.json(
+            {
+                error: 'Invalid request payload',
+                details: error.issues,
+            },
+            { status: 400 }
+        )
     }
+
+    console.error('IoT Error:', error)
+    return NextResponse.json(
+        { error: 'Internal server error' },
+        { status: 500 }
+    )
 }
