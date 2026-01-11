@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
         const { device_id, api_key, rfid_uid } = validatedData
 
-        const supabase = createClient()
+        const supabase = await createClient()
 
         // 1. Validate device and API key
         const { data: device, error: deviceError } = await supabase
